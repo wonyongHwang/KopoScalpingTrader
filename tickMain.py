@@ -198,7 +198,7 @@ if __name__ == "__main__":
 
     while True:
         beepsound()
-    T1452()
+        T1452()
         searchCandidates()
         print("------------------------------")
         print("--- KOPO          ------------")
