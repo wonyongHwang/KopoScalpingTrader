@@ -29,7 +29,7 @@ class XAQueryEvents:
     상태 = False
 
     def OnReceiveData(self, szTrCode):
-        print("OnReceiveData : %s" % szTrCode)
+        #print("OnReceiveData : %s" % szTrCode)
         XAQueryEvents.상태 = True
 
     def OnReceiveMessage(self, systemError, messageCode, message):
@@ -1021,6 +1021,57 @@ def t0425(계좌번호='', 비밀번호='', 종목번호='', 체결구분='0', �
 # df0, df = t0424(계좌번호=계좌[0],비밀번호='',단가구분='1',체결구분='0',단일가구분='0',제비용포함여부='1',CTS_종목번호='')
 # df0, df = t0425(계좌번호=계좌[0],비밀번호='',종목번호='',체결구분='0',매매구분='0',정렬순서='2',주문번호='')
 # print(df)
+def t1636(구분="0", 금액수량구분="0", 정렬기준="1", 종목코드="", IDXCTS=""):
+    pathname = os.path.dirname(sys.argv[0])
+    resdir = os.path.abspath(pathname)
 
+    query = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEvents)
 
+    MYNAME = inspect.currentframe().f_code.co_name
+    INBLOCK = "%sInBlock" % MYNAME
+    INBLOCK1 = "%sInBlock1" % MYNAME
+    OUTBLOCK = "%sOutBlock" % MYNAME
+    OUTBLOCK1 = "%sOutBlock1" % MYNAME
+    OUTBLOCK2 = "%sOutBlock2" % MYNAME
+    RESFILE = "C:\\eBEST\\xingAPI\\Res\\t1636.res"
+
+    print(MYNAME, RESFILE)
+
+    query.LoadFromResFile(RESFILE)
+    query.SetFieldData(INBLOCK, "gubun", 0, 구분)
+    query.SetFieldData(INBLOCK, "gubun1", 0, 금액수량구분)
+    query.SetFieldData(INBLOCK, "gubun2", 0, 정렬기준)
+    query.SetFieldData(INBLOCK, "shcode", 0, 종목코드)
+    query.SetFieldData(INBLOCK, "cts_idx", 0, IDXCTS)
+    query.Request(0)
+
+    while XAQueryEvents.상태 == False:
+        pythoncom.PumpWaitingMessages()
+
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK1)
+    for i in range(nCount):
+        순위 = query.GetFieldData(OUTBLOCK1, "rank", i).strip()
+        종목명 = query.GetFieldData(OUTBLOCK1, "hname", i).strip()
+        현재가 = (query.GetFieldData(OUTBLOCK1, "price", i).strip())
+        대비구분 = (query.GetFieldData(OUTBLOCK1, "sign", i).strip())
+        대비 = (query.GetFieldData(OUTBLOCK1, "change", i).strip())
+        등락률 = (query.GetFieldData(OUTBLOCK1, "diff", i).strip())
+        거래량 = (query.GetFieldData(OUTBLOCK1, "volume", i).strip())
+        순매수금액 = (query.GetFieldData(OUTBLOCK1, "svalue", i).strip())
+        매도금액 = (query.GetFieldData(OUTBLOCK1, "offervalue", i).strip())
+        매수금액 = (query.GetFieldData(OUTBLOCK1, "stksvalue", i).strip())
+        순매수수량 = (query.GetFieldData(OUTBLOCK1, "svolume", i).strip())
+        매도수량 = (query.GetFieldData(OUTBLOCK1, "offervolume", i).strip())
+        매수수량 = (query.GetFieldData(OUTBLOCK1, "stksvolume", i).strip())
+        시가총액 = (query.GetFieldData(OUTBLOCK1, "sgta", i).strip())
+        비중 = (query.GetFieldData(OUTBLOCK1, "rate", i).strip())
+        종목코드 = (query.GetFieldData(OUTBLOCK1, "shcode", i).strip())
+        lst = [순위, 종목명, 현재가, 대비구분, 대비, 등락률, 거래량, 순매수금액, 매도금액, 매수금액, 순매수수량, 매도수량, 매수수량, 시가총액, 비중, 종목코드 ]
+        result.append(lst)
+
+    columns = ['순위', '종목명', '현재가', '대비구분', '대비', '등락률', '거래량', '순매수금액', '매도금액', '매수금액', '순매수수량', '매도수량', '매수수량', '시가총액',  \
+               '비중', '종목코드']
+    df = DataFrame(data=result, columns=columns)
+    return df
 # 출처 : https://thinkalgo.tistory.com/61?category=748979

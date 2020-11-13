@@ -98,14 +98,14 @@ if __name__ == "__main__":
         account = inXASession.GetAccountList(i)
         print(account)
 
-    listT1452=[["null" for col in range(5)] for row in range(120)]
-
+    #listT1452=[["null" for col in range(5)] for row in range(120)]
+    listT1452 = [["null" for col in range(1)] for row in range(80)]
     # 전날 데이터 수신 (1: today 2: yesterday)
     def T1452(idx=0, isToday=1):
         # Exit Condition
         idxTemp = int(idx)
         print("idxTemp = ",idxTemp)
-        if idxTemp >= 120 :
+        if idxTemp >= 80 :
             return
 
         instXAQueryT1452 = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEventsT1452)
@@ -168,31 +168,43 @@ if __name__ == "__main__":
         return myShcode
 
     def searchCandidates():
-        pythoncom.CoInitialize()
+        # pythoncom.CoInitialize()
         t1471i = T1471.XAT1471()
         # for i in T8430():
         #     t1471i.T1471_SearchBuyCandidates(i)  # 매수 조건 검사
         #     time.sleep(3)
+
+        df = orderManager.t1636()
+        for i in range(0, df.shape[0]):
+            print("순위:", df["순위"].values[i], "종목명:", df["종목명"].values[i], "현재가:", df["현재가"].values[i], \
+                  "대비구분:", df["대비구분"].values[i], "대비:", df["대비"].values[i], "등락률:", df["등락률"].values[i], \
+                  "거래량:", df["거래량"].values[i], "순매수수량:", df["순매수수량"].values[i], "비중:", df["비중"].values[i])
+            if float(df["등락률"].values[i]) > 0 :
+                t1471i.T1471_SearchBuyCandidates(df["종목코드"].values[i])  # 매수 조건 검사
+                time.sleep(3)
+
         for row in listT1452:
             t1471i.T1471_SearchBuyCandidates(row[6])  # 매수 조건 검사
-            time.sleep(2)
-        pythoncom.CoUninitialize()
+            time.sleep(3)
+
+        # pythoncom.CoUninitialize()
 
     def beepsound():
         freq = 2000  # range : 37 ~ 32767
         dur = 3000  # ms
         ws.Beep(freq, dur)  # winsound.Beep(frequency, duration)
 
-    T1452()
-    beepsound()
+
+
     while True:
-        searchCandidates()
         beepsound()
+    T1452()
+        searchCandidates()
         print("------------------------------")
         print("--- KOPO          ------------")
         print("--- dept. of SMART FINANCE ---")
         print("------------------------------")
-        time.sleep(60)
+
 
 
 
