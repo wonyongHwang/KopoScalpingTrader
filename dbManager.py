@@ -27,21 +27,21 @@ class dbManager:
         dbManager.stock_db.commit()
 
     def insertObserverList(_self, *args):
-        sql = '''INSERT INTO `observerlist` (`shcode`, `date`,`time`,`msrate`, `bidrem`, `offerrem`, `price`,`excluded`) VALUES (%s, %s, %s, %s, %s, %s, %s, 0);'''
+        sql = '''INSERT INTO `observerlist` (`shcode`, `date`,`time`,`msrate`, `bidrem`, `offerrem`, `price`,`excluded`,`strategy`) VALUES (%s, %s, %s, %s, %s, %s, %s, 0, %s);'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
     def selectObserverList(_self, *args):
         #sql = '''select * from observerlist where date=%s and excluded!=1 group by shcode order by time desc, msrate desc, offerrem desc limit 5;'''
-        sql = '''select * from observerlist a, orderlist b where a.date = %s and a.excluded != 1 and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc, msrate desc, offerrem - bidrem desc limit 5; '''
+        sql = '''select * from observerlist a, orderlist b where a.date = %s and a.excluded != 1 and a.strategy = %s and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc, msrate desc, offerrem - bidrem desc limit 5; '''
         dbManager.cursor.execute(sql, args)
         result = dbManager.cursor.fetchall()
         #print(result)
         return result
 
-    def updateObserverList(_self, shcode):
-        sql = '''update `observerlist` set `excluded` = 1 where `shcode` = %s;'''
-        dbManager.cursor.execute(sql, shcode)
+    def updateObserverList(_self, *args):
+        sql = '''update `observerlist` set `excluded` = 1 where `shcode` = %s and `date` = %s;'''
+        dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
     def insertOrderList(_self, *args):

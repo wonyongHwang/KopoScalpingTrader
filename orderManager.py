@@ -9,7 +9,7 @@ import time
 
 import pandas as pd
 from pandas import DataFrame #, Series, Panel
-
+import time
 
 class XASessionEvents:
     상태 = False
@@ -1021,7 +1021,8 @@ def t0425(계좌번호='', 비밀번호='', 종목번호='', 체결구분='0', �
 # df0, df = t0424(계좌번호=계좌[0],비밀번호='',단가구분='1',체결구분='0',단일가구분='0',제비용포함여부='1',CTS_종목번호='')
 # df0, df = t0425(계좌번호=계좌[0],비밀번호='',종목번호='',체결구분='0',매매구분='0',정렬순서='2',주문번호='')
 # print(df)
-def t1636(구분="0", 금액수량구분="0", 정렬기준="1", 종목코드="", IDXCTS=""):
+def t1636(구분="0", 금액수량구분="1", 정렬기준="1", 종목코드="", IDXCTS=""):
+    time.sleep(1.2)
     pathname = os.path.dirname(sys.argv[0])
     resdir = os.path.abspath(pathname)
 
@@ -1074,4 +1075,115 @@ def t1636(구분="0", 금액수량구분="0", 정렬기준="1", 종목코드="",
                '비중', '종목코드']
     df = DataFrame(data=result, columns=columns)
     return df
+
+def t8412(단축코드="", 단위="15", 요청건수="8", 시작일자="", 종료일자="99999999", cts_date="", comp_yn="N"):
+    time.sleep(1.2)
+    pathname = os.path.dirname(sys.argv[0])
+    resdir = os.path.abspath(pathname)
+
+    query = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEvents)
+
+    MYNAME = inspect.currentframe().f_code.co_name
+    INBLOCK = "%sInBlock" % MYNAME
+    INBLOCK1 = "%sInBlock1" % MYNAME
+    OUTBLOCK = "%sOutBlock" % MYNAME
+    OUTBLOCK1 = "%sOutBlock1" % MYNAME
+    OUTBLOCK2 = "%sOutBlock2" % MYNAME
+    RESFILE = "C:\\eBEST\\xingAPI\\Res\\t8412.res"
+
+    print(MYNAME, RESFILE)
+
+    query.LoadFromResFile(RESFILE)
+    query.SetFieldData(INBLOCK, "shcode", 0, 단축코드)
+    query.SetFieldData(INBLOCK, "ncnt", 0, 단위)
+    query.SetFieldData(INBLOCK, "qrycnt", 0, 요청건수)
+    query.SetFieldData(INBLOCK, "sdate", 0, 시작일자)
+    query.SetFieldData(INBLOCK, "edate", 0, 종료일자)
+    query.SetFieldData(INBLOCK, "cts_date", 0, cts_date)
+    query.SetFieldData(INBLOCK, "comp_yn", 0, comp_yn)
+    query.Request(0)
+
+    while XAQueryEvents.상태 == False:
+        pythoncom.PumpWaitingMessages()
+
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK1)
+    for i in range(nCount):
+        날짜 = (query.GetFieldData(OUTBLOCK1, "date", i).strip())
+        # 시각 = (query.GetFieldData(OUTBLOCK1, "time", i).strip())
+        시가 = float(query.GetFieldData(OUTBLOCK1, "open", i).strip())
+        고가 = float(query.GetFieldData(OUTBLOCK1, "high", i).strip())
+        저가 = float(query.GetFieldData(OUTBLOCK1, "low", i).strip())
+        종가 = float(query.GetFieldData(OUTBLOCK1, "close", i).strip())
+        거래량 = (query.GetFieldData(OUTBLOCK1, "jdiff_vol", i).strip())
+        거래대금 = (query.GetFieldData(OUTBLOCK1, "value", i).strip())
+        수정구분 = (query.GetFieldData(OUTBLOCK1, "jongchk", i).strip())
+        수정비율 = (query.GetFieldData(OUTBLOCK1, "rate", i).strip())
+        종가등락구분 = query.GetFieldData(OUTBLOCK1, "sign", i).strip()
+
+        lst = [날짜, 시가, 고가, 저가, 종가, 거래량, 거래대금, 수정구분, 수정비율, 종가등락구분]
+        result.append(lst)
+
+    columns = ['날짜','시가', '고가', '저가', '종가', '거래량', '거래대금', '수정구분', '수정비율', '종가등락구분']
+    df1 = DataFrame(data=result, columns=columns)
+
+    XAQueryEvents.상태 = False
+
+    return df1
+
+def t8413(단축코드="", 주기구분="2", 요청건수="42", 시작일자="", 종료일자="99999999", cts_date="", comp_yn="N"):
+    time.sleep(3.1) # request limit : 200 req / 10 min
+    pathname = os.path.dirname(sys.argv[0])
+    resdir = os.path.abspath(pathname)
+
+    query = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEvents)
+
+    MYNAME = inspect.currentframe().f_code.co_name
+    INBLOCK = "%sInBlock" % MYNAME
+    INBLOCK1 = "%sInBlock1" % MYNAME
+    OUTBLOCK = "%sOutBlock" % MYNAME
+    OUTBLOCK1 = "%sOutBlock1" % MYNAME
+    OUTBLOCK2 = "%sOutBlock2" % MYNAME
+    RESFILE = "C:\\eBEST\\xingAPI\\Res\\t8413.res"
+
+    print(MYNAME, RESFILE)
+
+    query.LoadFromResFile(RESFILE)
+    query.SetFieldData(INBLOCK, "shcode", 0, 단축코드)
+    query.SetFieldData(INBLOCK, "gubun", 0, 주기구분)
+    query.SetFieldData(INBLOCK, "qrycnt", 0, 요청건수)
+    query.SetFieldData(INBLOCK, "sdate", 0, 시작일자)
+    query.SetFieldData(INBLOCK, "edate", 0, 종료일자)
+    query.SetFieldData(INBLOCK, "cts_date", 0, cts_date)
+    query.SetFieldData(INBLOCK, "comp_yn", 0, comp_yn)
+    query.Request(0)
+
+    while XAQueryEvents.상태 == False:
+        pythoncom.PumpWaitingMessages()
+
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK1)
+    for i in range(nCount):
+        날짜 = (query.GetFieldData(OUTBLOCK1, "date", i).strip())
+        시가 = float(query.GetFieldData(OUTBLOCK1, "open", i).strip())
+        고가 = float(query.GetFieldData(OUTBLOCK1, "high", i).strip())
+        저가 = float(query.GetFieldData(OUTBLOCK1, "low", i).strip())
+        종가 = float(query.GetFieldData(OUTBLOCK1, "close", i).strip())
+        거래량 = (query.GetFieldData(OUTBLOCK1, "jdiff_vol", i).strip())
+        거래대금 = (query.GetFieldData(OUTBLOCK1, "value", i).strip())
+        수정구분 = (query.GetFieldData(OUTBLOCK1, "jongchk", i).strip())
+        수정비율 = (query.GetFieldData(OUTBLOCK1, "rate", i).strip())
+        수정주가반영항목 = query.GetFieldData(OUTBLOCK1, "pricechk", i).strip()
+        수정비율반영거래대금 = (query.GetFieldData(OUTBLOCK1, "ratevalue", i).strip())
+        종가등락구분 = query.GetFieldData(OUTBLOCK1, "sign", i).strip()
+
+        lst = [날짜, 시가, 고가, 저가, 종가, 거래량, 거래대금, 수정구분, 수정비율, 수정주가반영항목, 수정비율반영거래대금, 종가등락구분]
+        result.append(lst)
+
+    columns = ['날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '수정구분', '수정비율', '수정주가반영항목', '수정비율반영거래대금', '종가등락구분']
+    df1 = DataFrame(data=result, columns=columns)
+
+    XAQueryEvents.상태 = False
+
+    return df1
 # 출처 : https://thinkalgo.tistory.com/61?category=748979
