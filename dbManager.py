@@ -45,7 +45,7 @@ class dbManager:
         dbManager.stock_db.commit()
 
     def insertOrderList(_self, *args):
-        sql = '''INSERT INTO `orderlist` (`shcode`, `ordqty`, `ordprc`, `ordno`, `orderdate`, `ordtime`, `isunm`,`bnstpcode`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
+        sql = '''INSERT INTO `orderlist` (`shcode`, `ordqty`, `ordprc`, `ordno`, `orderdate`, `ordtime`, `isunm`,`bnstpcode`,`strategy`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s);'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
@@ -62,10 +62,16 @@ class dbManager:
         return result
 
     def updateBuyListford2(_self, *args):
+        # reserve1 = 1 : 미체결 없음을 의미
         sql = '''update `orderlist` set `reserve1` = '1' where shcode=%s and orderdate=%s;'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
+    def selectLatestBoughtItemByStrategy(_self, *args):
+        sql = '''select * from orderlist where shcode=%s and strategy=%s order by orderdate desc limit 1;'''
+        dbManager.cursor.execute(sql, args)
+        result = dbManager.cursor.fetchall()
+        return result
 #i = dbManager()
 #print(i.cursor)
 #print(i.stock_db)

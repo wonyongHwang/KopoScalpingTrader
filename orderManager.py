@@ -5,9 +5,6 @@ import win32com.client
 import pythoncom
 import os, sys
 import inspect
-import time
-
-import pandas as pd
 from pandas import DataFrame #, Series, Panel
 import time
 
@@ -1186,4 +1183,74 @@ def t8413(단축코드="", 주기구분="2", 요청건수="42", 시작일자="",
     XAQueryEvents.상태 = False
 
     return df1
+
+def t1471(종목코드="", 분구분="01", 시간="", 자료개수=""):
+    time.sleep(3.1) # request limit : 200 req / 10 min
+    pathname = os.path.dirname(sys.argv[0])
+    resdir = os.path.abspath(pathname)
+
+    query = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEvents)
+
+    MYNAME = inspect.currentframe().f_code.co_name
+    INBLOCK = "%sInBlock" % MYNAME
+    INBLOCK1 = "%sInBlock1" % MYNAME
+    OUTBLOCK = "%sOutBlock" % MYNAME
+    OUTBLOCK1 = "%sOutBlock1" % MYNAME
+    OUTBLOCK2 = "%sOutBlock2" % MYNAME
+    RESFILE = "C:\\eBEST\\xingAPI\\Res\\t1471.res"
+
+    print(MYNAME, RESFILE)
+
+    query.LoadFromResFile(RESFILE)
+    query.SetFieldData(INBLOCK, "shcode", 0, 종목코드)
+    query.SetFieldData(INBLOCK, "gubun", 0, 분구분)  # 00:30sec, 01: 1min
+    query.SetFieldData(INBLOCK, "time", 0, 시간)
+    query.SetFieldData(INBLOCK, "cnt", 0, 자료개수)
+    query.Request(0)
+
+    while XAQueryEvents.상태 == False:
+        pythoncom.PumpWaitingMessages()
+
+    #현재가 = query.GetFieldData(OUTBLOCK, "price", 0)
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK)
+    for i in range(nCount):
+        시간CTS = (query.GetFieldData(OUTBLOCK, "time", i).strip())
+        현재가 = (query.GetFieldData(OUTBLOCK, "price", i).strip())
+        전일대비구분 = (query.GetFieldData(OUTBLOCK, "sign", i).strip())
+        전일대비 = (query.GetFieldData(OUTBLOCK, "change", i).strip())
+        등락율 = (query.GetFieldData(OUTBLOCK, "diff", i).strip())
+        누적거래량 = query.GetFieldData(OUTBLOCK, "volume", i).strip()
+        lst = [시간CTS, 현재가, 전일대비구분, 전일대비, 등락율, 누적거래량]
+        result.append(lst)
+
+    columns = ['시간CTS', '현재가', '전일대비구분', '전일대비', '등락율', '누적거래량']
+    df = DataFrame(data=result, columns=columns)
+
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK1)
+    for i in range(nCount):
+        체결시간 = (query.GetFieldData(OUTBLOCK1, "time", i).strip())
+        매도증감 = (query.GetFieldData(OUTBLOCK1, "preoffercha1", i).strip())
+        매도우선잔량 = (query.GetFieldData(OUTBLOCK1, "offerrem1", i).strip())
+        매도우선호가 = (query.GetFieldData(OUTBLOCK1, "offerho1", i).strip())
+        매수우선호가 = (query.GetFieldData(OUTBLOCK1, "bidho1", i).strip())
+        매수우선잔량 = (query.GetFieldData(OUTBLOCK1, "bidrem1", i).strip())
+        매수증감 = (query.GetFieldData(OUTBLOCK1, "prebidcha1", i).strip())
+        총매도 = (query.GetFieldData(OUTBLOCK1, "totofferrem", i).strip())
+        총매수 = (query.GetFieldData(OUTBLOCK1, "totbidrem", i).strip())
+        순매수 = query.GetFieldData(OUTBLOCK1, "totsun", i).strip()
+        매수비율 = (query.GetFieldData(OUTBLOCK1, "msrate", i).strip())
+        종가 = query.GetFieldData(OUTBLOCK1, "close", i).strip()
+
+        lst = [체결시간, 매도증감, 매도우선잔량, 매도우선호가, 매수우선호가, 매수우선잔량, 매수증감, 총매도, 총매수, 순매수, 매수비율, 종가]
+        result.append(lst)
+
+    columns = ['체결시간', '매도증감', '매도우선잔량', '매도우선호가', '매수우선호가', '매수우선잔량', '매수증감', '총매도', '총매수', '순매수', '매수비율', '종가']
+    df1 = DataFrame(data=result, columns=columns)
+
+    XAQueryEvents.상태 = False
+
+    return (df, df1)
+
 # 출처 : https://thinkalgo.tistory.com/61?category=748979
