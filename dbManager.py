@@ -33,7 +33,7 @@ class dbManager:
 
     def selectObserverList(_self, *args):
         #sql = '''select * from observerlist where date=%s and excluded!=1 group by shcode order by time desc, msrate desc, offerrem desc limit 5;'''
-        sql = '''select * from observerlist a, orderlist b where a.date = %s and a.excluded != 1 and a.strategy = %s and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc, msrate desc, offerrem - bidrem desc limit 5; '''
+        sql = '''select * from observerlist a, orderlist b where a.date = %s and a.excluded != 1 and a.strategy = %s and time >  date_format(subdate(now(), Interval 10 Minute), '%%H%%i%%s') and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc, msrate desc, offerrem - bidrem desc limit 5; '''
         dbManager.cursor.execute(sql, args)
         result = dbManager.cursor.fetchall()
         #print(result)
@@ -69,6 +69,17 @@ class dbManager:
 
     def selectLatestBoughtItemByStrategy(_self, *args):
         sql = '''select * from orderlist where shcode=%s and strategy=%s order by orderdate desc limit 1;'''
+        dbManager.cursor.execute(sql, args)
+        result = dbManager.cursor.fetchall()
+        return result
+
+    def insertDailyRecommendList(_self, *args):
+        sql = '''INSERT INTO `dailyrecommend` (`shcode`, `date`,`gubun`,`minclose`, `d60ma`,`rsitgt`, `rsisignal`) VALUES (%s, %s, %s, %s, %s, %s, %s);'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+
+    def selectDailyRecommendList(_self, *args):
+        sql = '''select shcode from dailyrecommend where date >= date_add(now(), interval -1 day)'''
         dbManager.cursor.execute(sql, args)
         result = dbManager.cursor.fetchall()
         return result
