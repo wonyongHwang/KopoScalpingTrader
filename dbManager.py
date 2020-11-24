@@ -33,8 +33,10 @@ class dbManager:
 
     def selectObserverList(_self, *args):
         #sql = '''select * from observerlist where date=%s and excluded!=1 group by shcode order by time desc, msrate desc, offerrem desc limit 5;'''
-        sql = '''select * from observerlist a, orderlist b where a.date = %s and a.excluded != 1 and a.strategy = %s and time >  date_format(subdate(now(), Interval 10 Minute), '%%H%%i%%s') and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc, msrate desc, offerrem - bidrem desc limit 5; '''
+        #sql = '''select * from observerlist a, orderlist b where a.date = %s and a.excluded != 1 and a.strategy = %s and time >  date_format(subdate(now(), Interval 10 Minute), '%%H%%i%%s') and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc, msrate desc, offerrem - bidrem desc limit 5; '''
+        sql = '''select * from observerlist a where a.date = %s and a.excluded != 1 and a.strategy = %s and a.time >  date_format(subdate(now(), Interval 10 Minute), '%%H%%i%%s') and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc; '''
         dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
         #print(result)
         return result
@@ -52,12 +54,14 @@ class dbManager:
     def selectOrdNo(_self, *args):
         sql = '''select ordno from orderlist where shcode = %s and orderdate = %s and bnstpcode = '1' order by ordtime desc;'''
         dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
         return result
 
     def selectbuylistford2(_self, *args):
         sql = '''select * from orderlist where orderdate = %s and bnstpcode = %s and reserve1 is null order by ordtime desc;'''
         dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
         return result
 
@@ -70,17 +74,19 @@ class dbManager:
     def selectLatestBoughtItemByStrategy(_self, *args):
         sql = '''select * from orderlist where shcode=%s and strategy=%s order by orderdate desc limit 1;'''
         dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
         return result
 
     def insertDailyRecommendList(_self, *args):
-        sql = '''INSERT INTO `dailyrecommend` (`shcode`, `date`,`gubun`,`minclose`, `d60ma`,`rsitgt`, `rsisignal`) VALUES (%s, %s, %s, %s, %s, %s, %s);'''
+        sql = '''INSERT INTO `dailyrecommend` (`shcode`, `date`,`gubun`,`minclose`, `d60ma`,`rsitgt`, `rsisignal`, `time`, `hname`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
     def selectDailyRecommendList(_self, *args):
-        sql = '''select shcode from dailyrecommend where date >= date_add(now(), interval -1 day)'''
+        sql = '''select shcode from dailyrecommend where date >= date_add(now(), interval -1 day) group by shcode'''
         dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
         return result
 #i = dbManager()
