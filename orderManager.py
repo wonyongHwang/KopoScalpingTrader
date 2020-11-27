@@ -1260,8 +1260,6 @@ def t1471(종목코드="", 분구분="01", 시간="", 자료개수=""):
     columns = ['체결시간', '매도증감', '매도우선잔량', '매도우선호가', '매수우선호가', '매수우선잔량', '매수증감', '총매도', '총매수', '순매수', '매수비율', '종가']
     df1 = DataFrame(data=result, columns=columns)
 
-
-
     return (df, df1)
 
 def t8407(건수="1", 종목코드=""):
@@ -1310,4 +1308,59 @@ def t8407(건수="1", 종목코드=""):
     df1 = DataFrame(data=result, columns=columns)
 
     return df1
+
+def t1825(검색코드="", 구분="0"): # 0: 전체, 1: 코스피, 2: 코스닥
+    time.sleep(3.1)  # request limit : 200 req / 10 min
+    pathname = os.path.dirname(sys.argv[0])
+    resdir = os.path.abspath(pathname)
+
+    query = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEvents)
+
+    MYNAME = inspect.currentframe().f_code.co_name
+    INBLOCK = "%sInBlock" % MYNAME
+    INBLOCK1 = "%sInBlock1" % MYNAME
+    OUTBLOCK = "%sOutBlock" % MYNAME
+    OUTBLOCK1 = "%sOutBlock1" % MYNAME
+    OUTBLOCK2 = "%sOutBlock2" % MYNAME
+    RESFILE = "C:\\eBEST\\xingAPI\\Res\\t1825.res"
+
+    # print(MYNAME, RESFILE)
+    print(MYNAME, end='')
+    print('>', end='')
+
+    query.LoadFromResFile(RESFILE)
+    query.SetFieldData(INBLOCK, "search_cd", 0, 검색코드)
+    query.SetFieldData(INBLOCK, "gubun", 0, 구분)  # 0: 전체, 1:코스피, 2:코스닥
+    query.Request(0)
+
+    while XAQueryEvents.상태 == False:
+        pythoncom.PumpWaitingMessages()
+    XAQueryEvents.상태 = False
+
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK)
+    result.append(nCount)
+    columns = ['검색종목수']
+    df = DataFrame(data=result, columns=columns)
+
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK1)
+    for i in range(nCount):
+        종목코드 = (query.GetFieldData(OUTBLOCK1, "shcode", i).strip())
+        종목명 = (query.GetFieldData(OUTBLOCK1, "hname", i).strip())
+        전일대비구분 = (query.GetFieldData(OUTBLOCK1, "sign", i).strip())
+        연속봉수 = (query.GetFieldData(OUTBLOCK1, "signcnt", i).strip())
+        현재가 = (query.GetFieldData(OUTBLOCK1, "close", i).strip())
+        전일대비 = (query.GetFieldData(OUTBLOCK1, "change", i).strip())
+        등락율 = (query.GetFieldData(OUTBLOCK1, "diff", i).strip())
+        거래량 = (query.GetFieldData(OUTBLOCK1, "volume", i).strip())
+        거래량전일대비율 = (query.GetFieldData(OUTBLOCK1, "volumerate", i).strip())
+
+        lst = [종목코드, 종목명, 전일대비구분, 연속봉수, 현재가, 전일대비, 등락율, 거래량전일대비율]
+        result.append(lst)
+
+    columns = ['종목코드', '종목명', '전일대비구분', '연속봉수', '현재가', '전일대비', '등락율', '거래량전일대비율']
+    df1 = DataFrame(data=result, columns=columns)
+
+    return (df, df1)
 # 출처 : https://thinkalgo.tistory.com/61?category=748979

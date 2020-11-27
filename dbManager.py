@@ -84,11 +84,19 @@ class dbManager:
         dbManager.stock_db.commit()
 
     def selectDailyRecommendList(_self, *args):
-        sql = '''select shcode from dailyrecommend where date >= date_add(now(), interval -1 day) group by shcode'''
+        sql = '''select distinct shcode from dailyrecommend where gubun=%s and if( weekday(curdate()) <= 4, date >= date_add(now(), interval -2 day),date >= date_add(now(), interval -4 day) )  group by shcode'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
         return result
+
+    def selectGubunRecommendList(_self, *args):
+        sql = '''select gubun from dailyrecommend where shcode=%s limit 1;'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+        result = dbManager.cursor.fetchall()
+        return result
+
 #i = dbManager()
 #print(i.cursor)
 #print(i.stock_db)
