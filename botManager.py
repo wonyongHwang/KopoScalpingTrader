@@ -9,7 +9,7 @@ import pythoncom
 import time
 
 my_token = 'your token should be here'   #토큰을 변수에 저장합니다.
-accountId = 'crust5'
+accountId = 'id'
 accountNumber = 'account number'
 accountPwd = 'account pwd'
 password = 'pwd'
