@@ -27,7 +27,7 @@ class dbManager:
         dbManager.stock_db.commit()
 
     def insertObserverList(_self, *args):
-        sql = '''INSERT INTO `observerlist` (`shcode`, `date`,`time`,`msrate`, `bidrem`, `offerrem`, `price`,`excluded`,`strategy`) VALUES (%s, %s, %s, %s, %s, %s, %s, 0, %s);'''
+        sql = '''INSERT INTO `observerlist` (`shcode`, `date`,`time`,`msrate`, `bidrem`, `offerrem`, `price`,`excluded`,`strategy`,`reserve1`) VALUES (%s, %s, %s, %s, %s, %s, %s, 0, %s, %s);'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
@@ -79,19 +79,34 @@ class dbManager:
         return result
 
     def insertDailyRecommendList(_self, *args):
-        sql = '''INSERT INTO `dailyrecommend` (`shcode`, `date`,`gubun`,`minclose`, `d60ma`,`rsitgt`, `rsisignal`, `time`, `hname`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);'''
+        sql = '''INSERT INTO `dailyrecommend` (`shcode`, `date`,`gubun`,`minclose`, `d60ma`,`rsitgt`, `rsisignal`, `time`, `hname`,`reserve1`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
     def selectDailyRecommendList(_self, *args):
-        sql = '''select distinct shcode from dailyrecommend where gubun=%s and if( weekday(curdate()) <= 4, date >= date_add(now(), interval -2 day),date >= date_add(now(), interval -4 day) )  group by shcode'''
+        #sql = '''select distinct shcode, hname from dailyrecommend where gubun=%s and if( weekday(curdate()) <= 4, date >= date_add(now(), interval -2 day),date >= date_add(now(), interval -4 day) ) and shcode not in (select shcode from orderlist where orderdate= %s) group by shcode'''
+        sql = '''select distinct shcode, hname from dailyrecommend where gubun=%s and if( weekday(curdate()) = 0,date >= date_add(now(), interval -4 day), date >= date_add(now(), interval -2 day)) and shcode not in (select shcode from orderlist where orderdate= %s) group by shcode'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
         return result
 
     def selectGubunRecommendList(_self, *args):
-        sql = '''select gubun from dailyrecommend where shcode=%s limit 1;'''
+        sql = '''select gubun, hname from dailyrecommend where shcode=%s limit 1;'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+        result = dbManager.cursor.fetchall()
+        return result
+
+    def selectOrderListByDate(_self, *args):
+        sql = '''select * from orderlist where orderdate=%s group by isunm;'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+        result = dbManager.cursor.fetchall()
+        return result
+
+    def selectBoughtDateFromOrderList(_self, *args):
+        sql = '''select * from orderlist where shcode=%s and bnstpcode=2 and orderdate < %s order by orderdate desc limit 1'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
