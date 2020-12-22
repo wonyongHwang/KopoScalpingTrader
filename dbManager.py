@@ -71,6 +71,19 @@ class dbManager:
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
+    def updateOrdListBB(_self, *args):
+        # reserve1 = 1 : 미체결 없음을 의미
+        sql = '''update `orderlist` set `reserve2` = '1' where shcode=%s and orderdate=%s and bnstpcode='2';'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+
+    def selectOrdListBB(_self, *args):
+        sql = '''select reserve2 from orderlist where shcode=%s and orderdate = %s and bnstpcode = '2';'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+        result = dbManager.cursor.fetchall()
+        return result
+
     def selectLatestBoughtItemByStrategy(_self, *args):
         sql = '''select * from orderlist where shcode=%s and strategy=%s order by orderdate desc limit 1;'''
         dbManager.cursor.execute(sql, args)

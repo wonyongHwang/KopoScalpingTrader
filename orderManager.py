@@ -1125,6 +1125,105 @@ def t0425(계좌번호='', 비밀번호='', 종목번호='', 체결구분='0', �
 
     return (df, df1)
 
+def t1533(구분="1"): #1 상승률 상위
+    # time.sleep(1.1)
+    pathname = os.path.dirname(sys.argv[0])
+    resdir = os.path.abspath(pathname)
+
+    query = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEvents)
+
+    MYNAME = inspect.currentframe().f_code.co_name
+    INBLOCK = "%sInBlock" % MYNAME
+    INBLOCK1 = "%sInBlock1" % MYNAME
+    OUTBLOCK = "%sOutBlock" % MYNAME
+    OUTBLOCK1 = "%sOutBlock1" % MYNAME
+    OUTBLOCK2 = "%sOutBlock2" % MYNAME
+    RESFILE = "C:\\eBEST\\xingAPI\\Res\\t1533.res"
+
+    #print(MYNAME, RESFILE)
+    print(MYNAME, end='')
+    print('>', end='')
+
+    query.LoadFromResFile(RESFILE)
+    query.SetFieldData(INBLOCK, "gubun", 0, 구분)
+    query.SetFieldData(INBLOCK, "chgdate", 0, "")
+    query.Request(0)
+
+    while XAQueryEvents.상태 == False:
+        pythoncom.PumpWaitingMessages()
+    XAQueryEvents.상태 = False
+
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK)
+    for i in range(nCount):
+        테마명 = query.GetFieldData(OUTBLOCK, "tmname", i)
+        전체 = query.GetFieldData(OUTBLOCK, "totcnt", i)
+        상승 = query.GetFieldData(OUTBLOCK, "upcnt", i)
+        하락 = query.GetFieldData(OUTBLOCK, "dncnt", i)
+        상승비율 = query.GetFieldData(OUTBLOCK, "uprate", i)
+        거래증가율 = query.GetFieldData(OUTBLOCK, "diff_vol", i)
+        평균등락율 = query.GetFieldData(OUTBLOCK, "avgdiff", i)
+        대비등락율 = query.GetFieldData(OUTBLOCK, "chgdiff", i)
+        테마코드 = query.GetFieldData(OUTBLOCK, "tmcode", i)
+
+        lst = [테마명, 전체, 상승, 하락, 상승비율, 거래증가율, 평균등락율, 대비등락율, 테마코드]
+        result.append(lst)
+
+    columns = ['테마명', '전체', '상승', '하락', '상승비율', '거래증가율', '평균등락율', '대비등락율', '테마코드']
+    df = DataFrame(data=result, columns=columns)
+    return df
+
+def t1537(테마코드=""): #1 상승률 상위
+    # time.sleep(1.1)
+    pathname = os.path.dirname(sys.argv[0])
+    resdir = os.path.abspath(pathname)
+
+    query = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEvents)
+
+    MYNAME = inspect.currentframe().f_code.co_name
+    INBLOCK = "%sInBlock" % MYNAME
+    INBLOCK1 = "%sInBlock1" % MYNAME
+    OUTBLOCK = "%sOutBlock" % MYNAME
+    OUTBLOCK1 = "%sOutBlock1" % MYNAME
+    OUTBLOCK2 = "%sOutBlock2" % MYNAME
+    RESFILE = "C:\\eBEST\\xingAPI\\Res\\t1537.res"
+
+    #print(MYNAME, RESFILE)
+    print(MYNAME, end='')
+    print('>', end='')
+
+    query.LoadFromResFile(RESFILE)
+    query.SetFieldData(INBLOCK, "tmcode", 0, 테마코드)
+    query.Request(0)
+
+    while XAQueryEvents.상태 == False:
+        pythoncom.PumpWaitingMessages()
+    XAQueryEvents.상태 = False
+
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK1)
+    for i in range(nCount):
+        종목명 = query.GetFieldData(OUTBLOCK1, "hname", i)
+        현재가 = query.GetFieldData(OUTBLOCK1, "price", i)
+        전일대비구분 = query.GetFieldData(OUTBLOCK1, "sign", i)
+        전일대비 = query.GetFieldData(OUTBLOCK1, "change", i)
+        등락율 = query.GetFieldData(OUTBLOCK1, "diff", i)
+        누적거래량 = query.GetFieldData(OUTBLOCK1, "volume", i)
+        전일동시간 = query.GetFieldData(OUTBLOCK1, "jniltime", i)
+        종목코드 = query.GetFieldData(OUTBLOCK1, "shcode", i)
+        예상체결가 = query.GetFieldData(OUTBLOCK1, "yeprice", i)
+        시가 = query.GetFieldData(OUTBLOCK1, "open", i)
+        고가 = query.GetFieldData(OUTBLOCK1, "high", i)
+        저가 = query.GetFieldData(OUTBLOCK1, "low", i)
+        누적거래대금 = query.GetFieldData(OUTBLOCK1, "value", i)
+        시가총액 = query.GetFieldData(OUTBLOCK1, "marketcap", i)
+        lst = [종목명, 현재가, 전일대비구분, 전일대비, 등락율, 누적거래량, 전일동시간, 종목코드, 예상체결가, 시가, 고가, 저가, 누적거래대금, 시가총액]
+        result.append(lst)
+
+    columns = ['종목명', '현재가', '전일대비구분', '전일대비', '등락율', '누적거래량', '전일동시간', '종목코드', '예상체결가','시가','고가','저가','누적거래대금','시가총액']
+    df = DataFrame(data=result, columns=columns)
+    return df
+
 # df0, df1, df = CSPAQ12300(레코드갯수='',계좌번호=계좌[0],비밀번호='0609',잔고생성구분='0',수수료적용구분='1',D2잔고기준조회구분='0',단가구분='0')
 # df0, df = t0424(계좌번호=계좌[0],비밀번호='',단가구분='1',체결구분='0',단일가구분='0',제비용포함여부='1',CTS_종목번호='')
 # df0, df = t0425(계좌번호=계좌[0],비밀번호='',종목번호='',체결구분='0',매매구분='0',정렬순서='2',주문번호='')
