@@ -972,7 +972,7 @@ def t0424(계좌번호='', 비밀번호='', 단가구분='1', 체결구분='0', 
 
     while XAQueryEvents.상태 == False:
         pythoncom.PumpWaitingMessages()
-
+    XAQueryEvents.상태 = False
     result = []
     nCount = query.GetBlockCount(OUTBLOCK)
     for i in range(nCount):
@@ -1033,7 +1033,7 @@ def t0424(계좌번호='', 비밀번호='', 단가구분='1', 체결구분='0', 
                '평가금액', '평가손익', '수익율', '수수료', '제세금', '신용이자']
     df1 = DataFrame(data=result, columns=columns)
 
-    XAQueryEvents.상태 = False
+
 
     return (df, df1)
 
@@ -1069,7 +1069,7 @@ def t0425(계좌번호='', 비밀번호='', 종목번호='', 체결구분='0', �
 
     while XAQueryEvents.상태 == False:
         pythoncom.PumpWaitingMessages()
-
+    XAQueryEvents.상태 = False
     result = []
     nCount = query.GetBlockCount(OUTBLOCK)
     for i in range(nCount):
@@ -1121,8 +1121,191 @@ def t0425(계좌번호='', 비밀번호='', 종목번호='', 체결구분='0', �
                '주문매체', '처리순번', '호가유형', '현재가', '주문구분', '신용구분', '대출일자']
     df1 = DataFrame(data=result, columns=columns)
 
+
+
+    return (df, df1)
+
+def t1101(_shcode=''):
+    pathname = os.path.dirname(sys.argv[0])
+    resdir = os.path.abspath(pathname)
+
+    query = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEvents)
+
+    MYNAME = inspect.currentframe().f_code.co_name
+    INBLOCK = "%sInBlock" % MYNAME
+    INBLOCK1 = "%sInBlock1" % MYNAME
+    OUTBLOCK = "%sOutBlock" % MYNAME
+    OUTBLOCK1 = "%sOutBlock1" % MYNAME
+    OUTBLOCK2 = "%sOutBlock2" % MYNAME
+    RESFILE = "C:\\eBEST\\xingAPI\\Res\\t1101.res"
+
+    print(MYNAME, RESFILE)
+
+    query.LoadFromResFile(RESFILE)
+    query.SetFieldData(INBLOCK, "shcode", 0, _shcode)
+    query.Request(0)
+
+    while XAQueryEvents.상태 == False:
+        pythoncom.PumpWaitingMessages()
     XAQueryEvents.상태 = False
 
+    result = []
+    hname = query.GetFieldData("t1101OutBlock", "hname", 0)
+    shcode = query.GetFieldData("t1101OutBlock", "shcode", 0)
+    price = query.GetFieldData("t1101OutBlock", "price", 0)
+    sign = query.GetFieldData("t1101OutBlock", "sign", 0)
+    change = query.GetFieldData("t1101OutBlock", "change", 0)
+    diff = query.GetFieldData("t1101OutBlock", "sign", 0)
+    volume = query.GetFieldData("t1101OutBlock", "sign", 0)
+    jnilclose = query.GetFieldData("t1101OutBlock", "sign", 0)
+    offerho1 = query.GetFieldData("t1101OutBlock", "offerho1", 0)
+    bidho1 = query.GetFieldData("t1101OutBlock", "bidho1", 0)
+    offerrem1 = query.GetFieldData("t1101OutBlock", "offerrem1", 0)
+    bidrem1 = query.GetFieldData("t1101OutBlock", "bidrem1", 0)
+    preoffercha1 = query.GetFieldData("t1101OutBlock", "preoffercha1", 0)
+    prebidcha1 = query.GetFieldData("t1101OutBlock", "prebidcha1", 0)
+    offerho2 = query.GetFieldData("t1101OutBlock", "offerho2", 0)
+    bidho2 = query.GetFieldData("t1101OutBlock", "bidho2", 0)
+    offerrem2 = query.GetFieldData("t1101OutBlock", "offerrem2", 0)
+    bidrem2 = query.GetFieldData("t1101OutBlock", "bidrem2", 0)
+    preoffercha2 = query.GetFieldData("t1101OutBlock", "preoffercha2", 0)
+    prebidcha2 = query.GetFieldData("t1101OutBlock", "prebidcha2", 0)
+    offerho3 = query.GetFieldData("t1101OutBlock", "offerho3", 0)
+    bidho3 = query.GetFieldData("t1101OutBlock", "bidho3", 0)
+    offerrem3 = query.GetFieldData("t1101OutBlock", "offerrem3", 0)
+    bidrem3 = query.GetFieldData("t1101OutBlock", "bidrem3", 0)
+    preoffercha3 = query.GetFieldData("t1101OutBlock", "preoffercha3", 0)
+    prebidcha3 = query.GetFieldData("t1101OutBlock", "prebidcha3", 0)
+    offerho4 = query.GetFieldData("t1101OutBlock", "offerho4", 0)
+    bidho4 = query.GetFieldData("t1101OutBlock", "bidho4", 0)
+    offerrem4 = query.GetFieldData("t1101OutBlock", "offerrem4", 0)
+    bidrem4 = query.GetFieldData("t1101OutBlock", "bidrem4", 0)
+    preoffercha4 = query.GetFieldData("t1101OutBlock", "preoffercha4", 0)
+    prebidcha4 = query.GetFieldData("t1101OutBlock", "prebidcha4", 0)
+    offerho5 = query.GetFieldData("t1101OutBlock", "offerho5", 0)
+    bidho5 = query.GetFieldData("t1101OutBlock", "bidho5", 0)
+    offerrem5 = query.GetFieldData("t1101OutBlock", "offerrem5", 0)
+    bidrem5 = query.GetFieldData("t1101OutBlock", "bidrem5", 0)
+    preoffercha5 = query.GetFieldData("t1101OutBlock", "preoffercha5", 0)
+    prebidcha5 = query.GetFieldData("t1101OutBlock", "prebidcha5", 0)
+    offerho6 = query.GetFieldData("t1101OutBlock", "offerho6", 0)
+    bidho6 = query.GetFieldData("t1101OutBlock", "bidho6", 0)
+    offerrem6 = query.GetFieldData("t1101OutBlock", "offerrem6", 0)
+    bidrem6 = query.GetFieldData("t1101OutBlock", "bidrem6", 0)
+    preoffercha6 = query.GetFieldData("t1101OutBlock", "preoffercha6", 0)
+    prebidcha6 = query.GetFieldData("t1101OutBlock", "prebidcha6", 0)
+    offerho7 = query.GetFieldData("t1101OutBlock", "offerho7", 0)
+    bidho7 = query.GetFieldData("t1101OutBlock", "bidho7", 0)
+    offerrem7 = query.GetFieldData("t1101OutBlock", "offerrem7", 0)
+    bidrem7 = query.GetFieldData("t1101OutBlock", "bidrem7", 0)
+    preoffercha7 = query.GetFieldData("t1101OutBlock", "preoffercha7", 0)
+    prebidcha7 = query.GetFieldData("t1101OutBlock", "prebidcha7", 0)
+    offerho8 = query.GetFieldData("t1101OutBlock", "offerho8", 0)
+    bidho8 = query.GetFieldData("t1101OutBlock", "bidho8", 0)
+    offerrem8 = query.GetFieldData("t1101OutBlock", "offerrem8", 0)
+    bidrem8 = query.GetFieldData("t1101OutBlock", "bidrem8", 0)
+    preoffercha8 = query.GetFieldData("t1101OutBlock", "preoffercha8", 0)
+    prebidcha8 = query.GetFieldData("t1101OutBlock", "prebidcha8", 0)
+    offerho9 = query.GetFieldData("t1101OutBlock", "offerho9", 0)
+    bidho9 = query.GetFieldData("t1101OutBlock", "bidho9", 0)
+    offerrem9 = query.GetFieldData("t1101OutBlock", "offerrem9", 0)
+    bidrem9 = query.GetFieldData("t1101OutBlock", "bidrem9", 0)
+    preoffercha9 = query.GetFieldData("t1101OutBlock", "preoffercha9", 0)
+    prebidcha9 = query.GetFieldData("t1101OutBlock", "prebidcha9", 0)
+    offerho10 = query.GetFieldData("t1101OutBlock", "offerho10", 0)
+    bidho10 = query.GetFieldData("t1101OutBlock", "bidho10", 0)
+    offerrem10 = query.GetFieldData("t1101OutBlock", "offerrem10", 0)
+    bidrem10 = query.GetFieldData("t1101OutBlock", "bidrem10", 0)
+    preoffercha10 = query.GetFieldData("t1101OutBlock", "preoffercha10", 0)
+    prebidcha10 = query.GetFieldData("t1101OutBlock", "prebidcha10", 0)
+    offer = query.GetFieldData("t1101OutBlock", "offer", 0)
+    bid = query.GetFieldData("t1101OutBlock", "bid", 0)
+    preoffercha = query.GetFieldData("t1101OutBlock", "preoffercha", 0)
+    prebidcha = query.GetFieldData("t1101OutBlock", "prebidcha", 0)
+    hotime = query.GetFieldData("t1101OutBlock", "hotime", 0)
+    yeprice = query.GetFieldData("t1101OutBlock", "yeprice", 0)
+    yevolume = query.GetFieldData("t1101OutBlock", "yevolume", 0)
+    yesign = query.GetFieldData("t1101OutBlock", "yesign", 0)
+    yechange = query.GetFieldData("t1101OutBlock", "yechange", 0)
+    yediff = query.GetFieldData("t1101OutBlock", "yediff", 0)
+    tmoffer = query.GetFieldData("t1101OutBlock", "tmoffer", 0)
+    tmbid = query.GetFieldData("t1101OutBlock", "tmbid", 0)
+    ho_status = query.GetFieldData("t1101OutBlock", "ho_status", 0)
+    uplmtprice = query.GetFieldData("t1101OutBlock", "uplmtprice", 0)
+    dnlmtprice = query.GetFieldData("t1101OutBlock", "dnlmtprice", 0)
+    open = query.GetFieldData("t1101OutBlock", "open", 0)
+    high = query.GetFieldData("t1101OutBlock", "high", 0)
+    low = query.GetFieldData("t1101OutBlock", "low", 0)
+    lst = [bidrem1, bidrem2,bidrem3, bidrem4,bidrem5, bidrem6,bidrem7, bidrem8,bidrem9, bidrem10 ]
+    result.append(lst)
+    columns = ['매수호가수량1', '매수호가수량2', '매수호가수량3', '매수호가수량4', '매수호가수량5', '매수호가수량6', '매수호가수량7', '매수호가수량8', '매수호가수량9', '매수호가수량10']
+    df = DataFrame(data=result, columns=columns)
+
+    return df
+
+def t1310(당일전일='0', 분틱='1', 종목번호='', 종료시간='99999999', CTS=''): # 당일, 틱
+    '''
+    주식 당일 전일 분틱 조회
+    '''
+    time.sleep(1.1)
+    pathname = os.path.dirname(sys.argv[0])
+    resdir = os.path.abspath(pathname)
+
+    query = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEvents)
+
+    MYNAME = inspect.currentframe().f_code.co_name
+    INBLOCK = "%sInBlock" % MYNAME
+    INBLOCK1 = "%sInBlock1" % MYNAME
+    OUTBLOCK = "%sOutBlock" % MYNAME
+    OUTBLOCK1 = "%sOutBlock1" % MYNAME
+    OUTBLOCK2 = "%sOutBlock2" % MYNAME
+    RESFILE = "C:\\eBEST\\xingAPI\\Res\\t1310.res"
+
+    print(MYNAME, RESFILE)
+
+    query.LoadFromResFile(RESFILE)
+    query.SetFieldData(INBLOCK, "daygb", 0, 당일전일)
+    query.SetFieldData(INBLOCK, "timegb", 0, 분틱)
+    query.SetFieldData(INBLOCK, "shcode", 0, 종목번호)
+    query.SetFieldData(INBLOCK, "endtime", 0, 종료시간)
+    query.SetFieldData(INBLOCK, "cts_time", 0, CTS)
+    query.Request(0)
+
+    while XAQueryEvents.상태 == False:
+        pythoncom.PumpWaitingMessages()
+    XAQueryEvents.상태 = False
+
+    result = []
+
+    시간CTS = query.GetFieldData(OUTBLOCK, "cts_time", 0).strip()
+    result.append([시간CTS])
+    columns = ['시간CTS']
+    df = DataFrame(data=result, columns=columns)
+
+    result = []
+    nCount = query.GetBlockCount(OUTBLOCK1)
+    for i in range(nCount):
+        시간 = query.GetFieldData(OUTBLOCK1, "chetime", i).strip()
+        현재가 = query.GetFieldData(OUTBLOCK1, "price", i).strip()
+        전일대비구분 = query.GetFieldData(OUTBLOCK1, "sign", i).strip()
+        전일대비 = query.GetFieldData(OUTBLOCK1, "change", i).strip()
+        등락율 = query.GetFieldData(OUTBLOCK1, "diff", i).strip()
+        체결수량 = query.GetFieldData(OUTBLOCK1, "cvolume", i).strip()
+        체결강도 = query.GetFieldData(OUTBLOCK1, "chdegree", i).strip()
+        거래량 = query.GetFieldData(OUTBLOCK1, "volume", i).strip()
+        매도체결수량 = query.GetFieldData(OUTBLOCK1, "mdvolume", i).strip()
+        매도체결건수 = query.GetFieldData(OUTBLOCK1, "mdchecnt", i).strip()
+        매수체결수량 = query.GetFieldData(OUTBLOCK1, "msvolume", i).strip()
+        매수체결건수 = query.GetFieldData(OUTBLOCK1, "mschecnt", i).strip()
+        순체결량 = query.GetFieldData(OUTBLOCK1, "revolume", i).strip()
+        순체결건수 = query.GetFieldData(OUTBLOCK1, "rechecnt", i).strip()
+
+        lst = [시간, 현재가, 전일대비구분, 전일대비, 등락율, 체결수량, 체결강도, 거래량, 매도체결수량, 매도체결건수, 매수체결수량, 매수체결건수, 순체결량, 순체결건수]
+        result.append(lst)
+
+    columns = ['시간', '현재가', '전일대비구분', '전일대비', '등락율', '체결수량', '체결강도', '거래량', '매도체결수량', '매도체결건수', '매수체결수량', '매수체결건수', '순체결량',
+               '순체결건수']
+    df1 = DataFrame(data=result, columns=columns)
     return (df, df1)
 
 def t1533(구분="1"): #1 상승률 상위
@@ -1154,17 +1337,17 @@ def t1533(구분="1"): #1 상승률 상위
     XAQueryEvents.상태 = False
 
     result = []
-    nCount = query.GetBlockCount(OUTBLOCK)
+    nCount = query.GetBlockCount(OUTBLOCK1)
     for i in range(nCount):
-        테마명 = query.GetFieldData(OUTBLOCK, "tmname", i)
-        전체 = query.GetFieldData(OUTBLOCK, "totcnt", i)
-        상승 = query.GetFieldData(OUTBLOCK, "upcnt", i)
-        하락 = query.GetFieldData(OUTBLOCK, "dncnt", i)
-        상승비율 = query.GetFieldData(OUTBLOCK, "uprate", i)
-        거래증가율 = query.GetFieldData(OUTBLOCK, "diff_vol", i)
-        평균등락율 = query.GetFieldData(OUTBLOCK, "avgdiff", i)
-        대비등락율 = query.GetFieldData(OUTBLOCK, "chgdiff", i)
-        테마코드 = query.GetFieldData(OUTBLOCK, "tmcode", i)
+        테마명 = query.GetFieldData(OUTBLOCK1, "tmname", i)
+        전체 = query.GetFieldData(OUTBLOCK1, "totcnt", i)
+        상승 = query.GetFieldData(OUTBLOCK1, "upcnt", i)
+        하락 = query.GetFieldData(OUTBLOCK1, "dncnt", i)
+        상승비율 = query.GetFieldData(OUTBLOCK1, "uprate", i)
+        거래증가율 = query.GetFieldData(OUTBLOCK1, "diff_vol", i)
+        평균등락율 = query.GetFieldData(OUTBLOCK1, "avgdiff", i)
+        대비등락율 = query.GetFieldData(OUTBLOCK1, "chgdiff", i)
+        테마코드 = query.GetFieldData(OUTBLOCK1, "tmcode", i)
 
         lst = [테마명, 전체, 상승, 하락, 상승비율, 거래증가율, 평균등락율, 대비등락율, 테마코드]
         result.append(lst)

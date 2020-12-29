@@ -51,6 +51,11 @@ class dbManager:
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
+    def deleteOrderList(_self, *args):
+        sql = '''delete from `orderlist` where orderdate= %s and shcode='%s and bnstpcode='2';'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+
     def selectOrdNo(_self, *args):
         sql = '''select ordno from orderlist where shcode = %s and orderdate = %s and bnstpcode = '1' order by ordtime desc;'''
         dbManager.cursor.execute(sql, args)
