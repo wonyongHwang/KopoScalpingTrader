@@ -34,7 +34,11 @@ class dbManager:
     def selectObserverList(_self, *args):
         #sql = '''select * from observerlist where date=%s and excluded!=1 group by shcode order by time desc, msrate desc, offerrem desc limit 5;'''
         #sql = '''select * from observerlist a, orderlist b where a.date = %s and a.excluded != 1 and a.strategy = %s and time >  date_format(subdate(now(), Interval 10 Minute), '%%H%%i%%s') and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc, msrate desc, offerrem - bidrem desc limit 5; '''
-        sql = '''select * from observerlist a where a.date = %s and a.excluded != 1 and a.strategy = %s and a.time >  date_format(subdate(now(), Interval 10 Minute), '%%H%%i%%s') and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc; '''
+        # sql = '''select * from observerlist a where a.date = %s and a.excluded != 1 and a.strategy = %s and a.time >  date_format(subdate(now(), Interval 2 Minute), '%%H%%i%%s') and a.shcode not in (select shcode from orderlist where orderdate= %s) group by a.shcode order by time desc; '''
+        # sql = '''select * from observerlist a where a.date = %s and a.strategy = %s and a.time >  date_format(subdate(now(), Interval 2 Minute), '%%H%%i%%s') group by a.shcode order by time desc; '''
+
+        sql = '''select * from observerlist a where a.date = %s and a.strategy = %s and a.time >  date_format(subdate(now(), Interval 2 Minute), '%%H%%i%%s') and a.shcode not in (select shcode from orderlist where orderdate= %s and ordtime > date_format(subdate(now(), Interval 10 Minute), '%%H%%i%%s')) group by a.shcode order by time desc; '''
+
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
@@ -52,7 +56,7 @@ class dbManager:
         dbManager.stock_db.commit()
 
     def deleteOrderList(_self, *args):
-        sql = '''delete from `orderlist` where orderdate= %s and shcode='%s and bnstpcode='2';'''
+        sql = '''delete from `orderlist` where orderdate= %s and shcode=%s and bnstpcode='2';'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
 
@@ -65,6 +69,13 @@ class dbManager:
 
     def selectbuylistford2(_self, *args):
         sql = '''select * from orderlist where orderdate = %s and bnstpcode = %s and reserve1 is null order by ordtime desc;'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+        result = dbManager.cursor.fetchall()
+        return result
+
+    def selectOrderList(_self, *args):
+        sql = '''select * from orderlist where orderdate = %s and bnstpcode = %s order by ordtime desc;'''
         dbManager.cursor.execute(sql, args)
         dbManager.stock_db.commit()
         result = dbManager.cursor.fetchall()
@@ -130,6 +141,31 @@ class dbManager:
         result = dbManager.cursor.fetchall()
         return result
 
+    def insertUserControlList(_self, *args):
+        sql = '''INSERT INTO `usercontrol` (`shcode`, `date`, `undercontrol`) VALUES (%s, %s, %s);'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+
+    def updateUserControlList(_self, *args):
+        sql = '''update `usercontrol` set `undercontrol` = %s where shcode=%s and date=%s;'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+        result = dbManager.cursor.fetchall()
+        return result
+
+    def selectUserControlList(_self, *args):
+        sql = '''select * from usercontrol where date=%s'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+        result = dbManager.cursor.fetchall()
+        return result
+
+    def selectUserControlListByShcode(_self, *args):
+        sql = '''select * from usercontrol where shcode=%s and date=%s'''
+        dbManager.cursor.execute(sql, args)
+        dbManager.stock_db.commit()
+        result = dbManager.cursor.fetchall()
+        return result
 #i = dbManager()
 #print(i.cursor)
 #print(i.stock_db)

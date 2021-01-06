@@ -360,7 +360,7 @@ def CSPAQ12200(레코드갯수='', 관리지점번호='', 계좌번호='', 비�
     '''
     현물계좌예수금 주문가능금액 총평가 조회
     '''
-    time.sleep(1)
+    time.sleep(5)
     pathname = os.path.dirname(sys.argv[0])
     resdir = os.path.abspath(pathname)
 

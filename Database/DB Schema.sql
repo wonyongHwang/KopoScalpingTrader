@@ -18,6 +18,28 @@ USE `kopo_stock`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `dailyrecommend`
+--
+
+DROP TABLE IF EXISTS `dailyrecommend`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `dailyrecommend` (
+  `shcode` varchar(10) DEFAULT NULL,
+  `hname` varchar(45) DEFAULT NULL,
+  `date` varchar(10) DEFAULT NULL,
+  `gubun` varchar(10) DEFAULT NULL,
+  `minclose` varchar(10) DEFAULT NULL,
+  `d60ma` varchar(10) DEFAULT NULL,
+  `rsitgt` varchar(10) DEFAULT NULL,
+  `rsisignal` varchar(10) DEFAULT NULL,
+  `time` varchar(10) DEFAULT NULL,
+  `reserve1` varchar(10) DEFAULT NULL,
+  `reserve2` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `observerlist`
 --
 
@@ -34,6 +56,7 @@ CREATE TABLE `observerlist` (
   `price` varchar(45) DEFAULT NULL,
   `bought` varchar(45) DEFAULT NULL,
   `excluded` varchar(45) DEFAULT NULL,
+  `strategy` varchar(45) DEFAULT NULL,
   `reserve1` varchar(45) DEFAULT NULL,
   `reserve2` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -56,7 +79,8 @@ CREATE TABLE `orderlist` (
   `reserve1` varchar(45) DEFAULT NULL,
   `reserve2` varchar(45) DEFAULT NULL,
   `orderdate` varchar(45) DEFAULT NULL,
-  `bnstpcode` varchar(45) DEFAULT NULL
+  `bnstpcode` varchar(45) DEFAULT NULL,
+  `strategy` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -103,6 +127,21 @@ CREATE TABLE `t1471outblockoccurs` (
   `close` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `usercontrol`
+--
+
+DROP TABLE IF EXISTS `usercontrol`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `usercontrol` (
+  `shcode` varchar(10) NOT NULL,
+  `date` varchar(45) NOT NULL,
+  `undercontrol` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`shcode`,`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -113,4 +152,4 @@ CREATE TABLE `t1471outblockoccurs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-11-10 17:39:03
+-- Dump completed on 2021-01-06 19:15:45
