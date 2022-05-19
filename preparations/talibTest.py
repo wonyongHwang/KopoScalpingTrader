@@ -34,6 +34,11 @@ print(macd)
 print(macdsignal)
 print(macdhist)
 
+upper, middle, low = ta.BBANDS(df['종가'], 20, 3, 3)  # 3 sigma
+upper = np.asarray(upper)
+middle = np.asarray(middle)
+low = np.array(low)
+
 obv = ta.OBV(np.asarray(df['종가'], dtype=np.double), np.asarray(df['거래량'], dtype=np.double))
 obvSignal = ta.MA(obv, timeperiod=9)
 
@@ -63,10 +68,18 @@ dfnew = dfnew.apply(pd.to_numeric)
 candlestick_ohlc(ax, dfnew.values, width=0.5, colorup='r', colordown='b')
 
 plt.subplot(235)
+plt.title("MACD")
 plt.plot(macd)
 plt.plot(macdsignal)
 plt.plot(macdhist)
 plt.legend(["macd", "macdsignal","macdhist"])
+
+plt.subplot(236)
+plt.title("Bollinger Band")
+plt.plot(upper)
+plt.plot(middle)
+plt.plot(low)
+plt.legend(["upper", "middle","low"])
 
 plt.grid()
 plt.show()
