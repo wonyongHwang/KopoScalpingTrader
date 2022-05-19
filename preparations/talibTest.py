@@ -71,10 +71,9 @@ plt.legend(["macd", "macdsignal","macdhist"])
 plt.grid()
 plt.show()
 plt.close()
-<<<<<<< HEAD
+
 
 
 def hello():
     print("hello")
-=======
->>>>>>> e6d9f9bc3a24e03edc5edb5c58a7be5e0f3378c1
+
